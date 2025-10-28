@@ -19,7 +19,7 @@ import {
   Button,
 } from "@mui/material";
 import { MoreVertical, Bell, X } from "lucide-react";
-import { useApi } from "../../../api/useApi";
+import { useApi } from "../../api/useApi";
 import UserDetail from "./UserDetail";
 
 export default function UserAlert() {

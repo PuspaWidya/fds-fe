@@ -18,7 +18,7 @@ import {
 } from "@mui/material";
 import { Edit, Settings } from "@mui/icons-material";
 import { SlidersHorizontal, PenLine } from "lucide-react";
-import { useApi } from "../../../api/useApi";
+import { useApi } from "../../api/useApi";
 const initialRules = [
   {
     rule_name: "Velocity Rule",
