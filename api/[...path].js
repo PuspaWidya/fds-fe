@@ -1,8 +1,13 @@
 export default async function handler(req, res) {
   const { path = [] } = req.query;
-  const target = `http://103.139.193.155:8082/${path.join("/")}${
-    req.url.includes("?") ? req.url.slice(req.url.indexOf("?")) : ""
-  }`;
+
+  // pastikan selalu ada trailing slash di akhir path (kecuali kosong)
+  const backendPath = path.length ? `${path.join("/")}/` : "";
+  const query = req.url.includes("?")
+    ? req.url.slice(req.url.indexOf("?"))
+    : "";
+
+  const target = `http://103.139.193.155:8082/${backendPath}${query}`;
 
   try {
     const response = await fetch(target, {
