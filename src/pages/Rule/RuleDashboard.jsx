@@ -61,7 +61,8 @@ export default function RuleDashboard() {
     const fetchTransaction = async () => {
       try {
         const data = await get("/rule-configs/", {
-          params: { skip: page, limit: limit },
+          skip: page,
+          limit: limit,
         });
 
         setRules(data.data);

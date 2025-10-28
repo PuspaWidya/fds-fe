@@ -52,7 +52,8 @@ export default function TransactionAlert() {
     const fetchTransaction = async () => {
       try {
         const data = await get("/transactions/alerts", {
-          params: { skip: page, limit: limit },
+          skip: page,
+          limit: limit,
         });
         setTransData(data?.data);
       } catch (err) {

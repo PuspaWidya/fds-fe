@@ -53,7 +53,8 @@ export default function UserAlert() {
     const fetchUser = async () => {
       try {
         const data = await get("/accounts/alerts", {
-          params: { skip: page, limit: limit },
+          skip: page,
+          limit: limit,
         });
         setUserData(data.data);
       } catch (err) {
