@@ -10,18 +10,9 @@ export default async function handler(req, res) {
         req.method !== "GET" && req.method !== "HEAD" ? req.body : undefined,
     });
 
-    const contentType = response.headers.get("content-type");
-    res.status(response.status);
-
-    if (contentType && contentType.includes("application/json")) {
-      const data = await response.json();
-      res.json(data);
-    } else {
-      const text = await response.text();
-      res.send(text);
-    }
+    const text = await response.text();
+    res.status(response.status).send(text);
   } catch (err) {
-    console.error("Proxy error:", err);
     res.status(500).json({ error: "Proxy error", details: err.message });
   }
 }
