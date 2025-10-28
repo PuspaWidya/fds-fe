@@ -51,26 +51,16 @@ const mainMenuItems = [
   // { text: "Settings", icon: <Settings size={20} /> },
 ];
 
-// const officeMenuItems = [
-//   { text: "London Office", icon: <Building2 size={20} />, badge: 2 },
-//   { text: "New York Office", icon: <Building2 size={20} /> },
-//   { text: "Nigeria Office", icon: <Building2 size={20} />, badge: 1 },
-//   { text: "Tokyo Office", icon: <Building2 size={20} /> },
-//   { text: "Cape Town Office", icon: <Building2 size={20} /> },
-// ];
-
 export default function Sidebar() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state) => state.sidebar.isOpen);
-  const [active, setActive] = useState("/");
+  const [active, setActive] = useState("Rules");
 
   const signOut = () => {
     localStorage.clear("token");
     navigate("/login");
   };
-
-  console.log(active);
 
   return (
     <Drawer
@@ -206,14 +196,17 @@ export default function Sidebar() {
               <ListItemButton
                 sx={{
                   borderRadius: 1,
-                  "&:hover": { backgroundColor: "#e3f2fd" },
+                  "&:hover": {
+                    backgroundColor: "#D6E4FF",
+                    transition: "background-color 0.2s ease",
+                  },
                   minHeight: 40,
                   justifyContent: isOpen ? "initial" : "center",
-                  backgroundColor: active === item ? "#e3f2fd" : "",
+                  backgroundColor: active == item.text ? "#e3f2fd" : "",
                 }}
                 onClick={() => {
                   navigate(routeMap[item.text]);
-                  setActive(routeMap[item.text]);
+                  setActive(item.text);
                 }}
               >
                 <ListItemIcon
@@ -221,8 +214,6 @@ export default function Sidebar() {
                     minWidth: 0,
                     mr: isOpen ? 2 : "auto",
                     justifyContent: "center",
-
-                    // color: item.text === "Live Alert" ? "#0288d1" : "inherit",
                   }}
                 >
                   {item.badge ? (

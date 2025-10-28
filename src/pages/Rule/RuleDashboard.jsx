@@ -276,7 +276,7 @@ export default function RuleDashboard() {
             <Box
               component="span"
               sx={{
-                color: "#2563EB",
+                color: "#172554",
                 fontWeight: 800,
                 letterSpacing: "0.5px",
               }}

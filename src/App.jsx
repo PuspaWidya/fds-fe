@@ -11,7 +11,6 @@ function LayoutWrapper() {
 
   const isNoLayout = noLayoutRoutes.includes(location.pathname);
 
-  console.log(isNoLayout);
   return isNoLayout ? (
     <AppRouter />
   ) : (

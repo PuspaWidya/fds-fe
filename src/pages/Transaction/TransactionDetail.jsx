@@ -15,7 +15,6 @@ import {
 const drawerWidth = 600;
 
 export default function TransactionDetail({ isOpen, onClose, transaction }) {
-  console.log(transaction, isOpen);
   const [tabIndex, setTabIndex] = useState(0);
 
   if (!transaction) return null;
