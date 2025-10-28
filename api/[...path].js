@@ -1,45 +1,39 @@
 // api/[...path].js
 export default async function handler(req, res) {
   try {
-    const { path = [] } = req.query; // Vercel provides this for [...path]
-    // join path parts into backend path (no leading/trailing duplicates)
-    let backendPath = path.join("/");
+    const { path = [] } = req.query; // e.g. ["rule-configs"]
+    // join to path and ensure single trailing slash when path not empty
+    let backendPath = path.join("/").replace(/\/+$/g, "");
+    if (backendPath) backendPath = `${backendPath}/`;
 
-    // Ensure exactly one trailing slash when path is not empty
-    if (backendPath) {
-      backendPath = backendPath.replace(/\/+$/g, ""); // remove trailing slashes
-      backendPath = `${backendPath}/`; // add single trailing slash
-    }
-
-    // preserve the query string from original request (including our added _t)
-    const query = req.url.includes("?")
-      ? req.url.slice(req.url.indexOf("?"))
-      : "";
+    // preserve query string if any
+    const query =
+      req.url && req.url.includes("?")
+        ? req.url.slice(req.url.indexOf("?"))
+        : "";
 
     const target = `http://103.139.193.155:8082/${backendPath}${query}`;
     console.log("Proxying to:", target);
 
-    // Build fetch options
     const fetchOptions = {
       method: req.method,
       headers: { ...req.headers },
-      // let node/fetch follow redirects by default
+      redirect: "follow",
     };
-    // remove host header to avoid backend confusion
     delete fetchOptions.headers.host;
 
-    // attach body for non-GET/HEAD
     if (!["GET", "HEAD"].includes(req.method)) {
+      // forward body for POST/PUT/PATCH/DELETE
       fetchOptions.body = req.body;
     }
 
     const response = await fetch(target, fetchOptions);
 
-    // forward important headers
+    // forward content-type if present
     const contentType = response.headers.get("content-type");
     if (contentType) res.setHeader("Content-Type", contentType);
 
-    // disable caching at Vercel edge so you always get fresh result while debugging
+    // disable caching at edge (useful while debugging)
     res.setHeader(
       "Cache-Control",
       "no-store, no-cache, must-revalidate, proxy-revalidate"
