@@ -10,6 +10,14 @@ const api = axios.create({
   },
 });
 
+api.interceptors.response.use(
+  (res) => res,
+  (err) => {
+    console.error("API Error:", err?.response?.status, err?.response?.data);
+    return Promise.reject(err);
+  }
+);
+
 // Tambah token otomatis (optional)
 // api.interceptors.request.use(
 //   (config) => {
