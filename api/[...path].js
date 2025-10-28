@@ -1,13 +1,16 @@
 export default async function handler(req, res) {
   const { path = [] } = req.query;
 
-  // pastikan selalu ada trailing slash di akhir path (kecuali kosong)
-  const backendPath = path.length ? `${path.join("/")}/` : "";
+  // pastikan hanya satu slash di antara host dan path
+  let backendPath = path.join("/");
+  if (!backendPath.endsWith("/")) backendPath += "/";
+
   const query = req.url.includes("?")
     ? req.url.slice(req.url.indexOf("?"))
     : "";
-
   const target = `http://103.139.193.155:8082/${backendPath}${query}`;
+
+  console.log("Proxying to:", target);
 
   try {
     const response = await fetch(target, {
