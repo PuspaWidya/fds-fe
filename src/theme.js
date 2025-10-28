@@ -3,22 +3,28 @@ import { createTheme } from "@mui/material/styles";
 // 🎨 Buat theme utama
 const theme = createTheme({
   palette: {
-    mode: "light", // bisa 'dark' juga
+    mode: "light",
     primary: {
-      main: "#1976d2", // biru MUI default
+      main: "#1976d2",
       contrastText: "#ffffff",
     },
     secondary: {
-      main: "#9c27b0", // ungu
+      main: "#9c27b0",
       contrastText: "#ffffff",
     },
     background: {
-      default: "#f5f5f5", // warna background halaman
-      paper: "#ffffff", // warna card, dialog, dsb
+      default: "#f5f5f5",
+      paper: "#ffffff",
     },
     text: {
       primary: "#212121",
       secondary: "#757575",
+    },
+    error: {
+      main: "#EF5350",
+    },
+    success: {
+      main: "#16A34A",
     },
   },
 

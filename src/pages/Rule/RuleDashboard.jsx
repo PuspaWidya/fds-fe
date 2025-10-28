@@ -17,6 +17,7 @@ import {
   Chip,
 } from "@mui/material";
 import { Edit, Settings } from "@mui/icons-material";
+import { SlidersHorizontal, PenLine } from "lucide-react";
 import { useApi } from "../../api/useApi";
 const initialRules = [
   {
@@ -62,7 +63,7 @@ export default function RuleDashboard() {
         const data = await get("/rule-configs/", {
           params: { skip: page, limit: limit },
         });
-        console.log(data, "????");
+
         setRules(data.data);
       } catch (err) {
         console.error(err);
@@ -81,11 +82,14 @@ export default function RuleDashboard() {
     setSelectedRule(null);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     setRules((prev) =>
       prev.map((r) => (r.rule_id === selectedRule.rule_id ? selectedRule : r))
     );
+    await put(`/rule-configs/${selectedRule.rule_id}`, selectedRule);
     handleClose();
+
+    //! error belum di handle
   };
 
   const handleChange = (e) => {
@@ -106,8 +110,10 @@ export default function RuleDashboard() {
         fontWeight={700}
         sx={{
           mb: 3,
-          color: "#222",
-          letterSpacing: 0.3,
+          fontWeight: 700,
+          fontFamily: "'Inter', sans-serif",
+          color: "#172554",
+          letterSpacing: "0.3px",
         }}
       >
         FDS Rules
@@ -123,19 +129,55 @@ export default function RuleDashboard() {
       >
         {rules?.map((rule) => (
           <Card
+            onClick={() => handleEdit(rule)}
             key={rule.rule_id}
-            elevation={2}
+            elevation={0}
             sx={{
-              borderRadius: 2,
+              borderRadius: 1,
               display: "flex",
               flexDirection: "column",
               justifyContent: "space-between",
               height: "100%",
               backgroundColor: "#fff",
-              transition: "all 0.15s ease-in-out",
+              position: "relative",
+              overflow: "hidden",
+              transition: "all 0.25s ease-in-out",
+              boxShadow: "0 2px 6px rgba(0,0,0,0.04)",
               "&:hover": {
-                transform: "translateY(-3px)",
-                boxShadow: "0 4px 15px rgba(0,0,0,0.05)",
+                transform: "translateY(-4px)",
+                boxShadow: "0 8px 22px rgba(37,99,235,0.12)",
+              },
+
+              // gradient line bawah card
+              "&::after": {
+                content: '""',
+                position: "absolute",
+                bottom: 0,
+                left: 0,
+                width: "100%",
+                height: "4px",
+                background:
+                  "linear-gradient(270deg, #06B6D4, #3B82F6, #2563EB, #06B6D4)",
+                backgroundSize: "400% 400%",
+                animation: "moveGradient 6s ease infinite",
+              },
+              "@keyframes moveGradient": {
+                "0%": { backgroundPosition: "0% 50%" },
+                "50%": { backgroundPosition: "100% 50%" },
+                "100%": { backgroundPosition: "0% 50%" },
+              },
+
+              // efek glow halus biru di bawah card
+              "&::before": {
+                content: '""',
+                position: "absolute",
+                bottom: "-10px",
+                left: "15%",
+                width: "70%",
+                height: "15px",
+                background:
+                  "radial-gradient(circle, rgba(59,130,246,0.25), transparent 70%)",
+                filter: "blur(10px)",
               },
             }}
           >
@@ -144,7 +186,7 @@ export default function RuleDashboard() {
                 flexGrow: 1,
                 display: "flex",
                 flexDirection: "column",
-                p: 1.5,
+                p: 2,
               }}
             >
               <Stack
@@ -153,22 +195,38 @@ export default function RuleDashboard() {
                 justifyContent="space-between"
                 sx={{ mb: 1 }}
               >
-                <Stack direction="row" spacing={0.8} alignItems="center">
-                  <Settings fontSize="small" sx={{ color: "#666" }} />
-                  <Typography variant="subtitle2" fontWeight={600}>
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <SlidersHorizontal
+                    size={16}
+                    color="#2563EB"
+                    strokeWidth={2}
+                  />
+                  <Typography
+                    variant="subtitle2"
+                    fontWeight={600}
+                    sx={{ color: "#1E293B" }}
+                  >
                     {rule.rule_name}
                   </Typography>
                 </Stack>
-                <IconButton
+
+                {/* <IconButton
                   onClick={() => handleEdit(rule)}
                   size="small"
-                  sx={{ p: 0.3 }}
+                  sx={{
+                    p: 0.4,
+                    color: "#3B82F6",
+                    transition: "all 0.2s ease",
+                    "&:hover": {
+                      backgroundColor: "rgba(59,130,246,0.08)",
+                    },
+                  }}
                 >
-                  <Edit fontSize="small" />
-                </IconButton>
+                  <PenLine size={15} strokeWidth={1.7} />
+                </IconButton> */}
               </Stack>
 
-              <Divider sx={{ mb: 1 }} />
+              <Divider sx={{ mb: 1.2 }} />
 
               <Stack spacing={0.7} flexGrow={1}>
                 <InfoItem label="Window" value={rule.window_seconds} />
@@ -183,19 +241,60 @@ export default function RuleDashboard() {
       </Box>
 
       {/* Dialog edit */}
-      <Dialog open={open} onClose={handleClose} maxWidth="xs" fullWidth>
-        <DialogTitle sx={{ fontWeight: 600, fontSize: "16px" }}>
-          Edit Rule – {selectedRule?.rule_name}
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        maxWidth="xs"
+        fullWidth
+        sx={{
+          "& .MuiPaper-root": {
+            borderRadius: 3,
+            p: 0,
+            boxShadow: "0 8px 32px rgba(0,0,0,0.08)",
+            border: "1px solid rgba(37,99,235,0.08)",
+            backdropFilter: "blur(8px)",
+            background: "linear-gradient(180deg, #ffffff 0%, #f9fafb 100%)",
+            transition: "all 0.3s ease",
+          },
+        }}
+      >
+        <DialogTitle
+          sx={{
+            fontFamily: "'Inter', sans-serif",
+            fontWeight: 700,
+            fontSize: "16px",
+            color: "#1E293B",
+            pb: 1,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            borderBottom: "1px solid rgba(0,0,0,0.05)",
+            background: "linear-gradient(90deg, #F8FAFC, #EFF6FF)",
+          }}
+        >
+          <span>
+            <Box
+              component="span"
+              sx={{
+                color: "#2563EB",
+                fontWeight: 800,
+                letterSpacing: "0.5px",
+              }}
+            >
+              {selectedRule?.rule_name}
+            </Box>
+          </span>
         </DialogTitle>
+
         <DialogContent
           sx={{
             p: 3,
-            w: 30, // ruang lebih lega
             width: "100%",
-            minWidth: 420, // pastikan cukup lebar
+            minWidth: 420,
+            backgroundColor: "#fff",
           }}
         >
-          <Stack spacing={2}>
+          <Stack spacing={2} sx={{ paddingTop: 2 }}>
             {[
               "window_seconds",
               "max_tx",
@@ -211,29 +310,78 @@ export default function RuleDashboard() {
                 value={selectedRule?.[field] ?? ""}
                 onChange={handleChange}
                 fullWidth
-                InputLabelProps={{ shrink: true }} // ⬅️ hindari label tertimpa
-                size="medium" // ⬅️ biar lebih besar dan nyaman
+                InputLabelProps={{ shrink: true }}
+                size="small"
                 sx={{
-                  "& .MuiInputBase-input": { fontSize: 15 },
-                  "& .MuiInputLabel-root": { fontSize: 14 },
+                  // padding: 10,
+                  "& .MuiInputBase-root": {
+                    borderRadius: 2,
+                    backgroundColor: "#F9FAFB",
+                    transition: "all 0.2s ease",
+                    "&:hover": {
+                      backgroundColor: "#F3F4F6",
+                    },
+                    "&.Mui-focused": {
+                      backgroundColor: "#fff",
+                      boxShadow: "0 0 0 2px rgba(37,99,235,0.2)",
+                    },
+                  },
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "rgba(0,0,0,0.1)",
+                  },
+                  "& .MuiInputLabel-root": {
+                    fontFamily: "'Inter', sans-serif",
+                    fontSize: 13,
+                    color: "#475569",
+                  },
+                  "& .MuiInputBase-input": {
+                    fontFamily: "'Inter', sans-serif",
+                    fontSize: 14.5,
+                    color: "#0F172A",
+                    paddingY: 1,
+                  },
                 }}
               />
             ))}
           </Stack>
         </DialogContent>
 
-        <DialogActions sx={{ px: 2, pb: 2 }}>
-          <Button onClick={handleClose} color="inherit" size="small">
+        <DialogActions
+          sx={{
+            px: 3,
+            pb: 2,
+            pt: 1,
+            borderTop: "1px solid rgba(0,0,0,0.05)",
+            backgroundColor: "#F8FAFC",
+          }}
+        >
+          <Button
+            onClick={handleClose}
+            color="inherit"
+            size="small"
+            sx={{
+              fontFamily: "'Inter', sans-serif",
+              textTransform: "none",
+              color: "#64748B",
+              "&:hover": { backgroundColor: "rgba(100, 116, 139, 0.28)" },
+            }}
+          >
             Cancel
           </Button>
           <Button
             variant="contained"
             size="small"
-            sx={{
-              backgroundColor: "#444",
-              "&:hover": { backgroundColor: "#222" },
-            }}
             onClick={handleSave}
+            sx={{
+              textTransform: "none",
+              fontWeight: 600,
+              background: " #2563EB",
+              boxShadow: "0 3px 10px rgba(37,99,235,0.2)",
+              "&:hover": {
+                backgroundColor: "#3B82F6",
+                boxShadow: "0 4px 12px rgba(125, 161, 238, 0.05)",
+              },
+            }}
           >
             Save
           </Button>

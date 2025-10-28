@@ -73,7 +73,7 @@ export default function UserDetail({ isOpen, onClose, transaction }) {
             boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
           }}
         >
-          <Typography variant="subtitle2" sx={{ color: "text.secondary" }}>
+          <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
             Username
           </Typography>
           <Typography variant="h6" sx={{ mb: 1 }}>
@@ -87,7 +87,6 @@ export default function UserDetail({ isOpen, onClose, transaction }) {
               size="small"
               sx={{
                 fontWeight: 600,
-                color: alert.status === "ALERT" ? "#c53030" : "#004b23",
               }}
             />
             {transaction.rule_names && transaction.rule_names !== "{}" && (
@@ -137,6 +136,46 @@ export default function UserDetail({ isOpen, onClose, transaction }) {
                 </Typography>
               </Stack>
             </Grid>
+            <Grid item xs={6}>
+              <Stack spacing={0.3}>
+                <Typography variant="caption" color="text.secondary">
+                  Activity Register MDIN
+                </Typography>
+                <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                  {transaction.activity_register_mdin || "-"}
+                </Typography>
+              </Stack>
+            </Grid>
+            <Grid item xs={6}>
+              <Stack spacing={0.3}>
+                <Typography variant="caption" color="text.secondary">
+                  Activity Status
+                </Typography>
+                <Typography variant="body2" sx={{ fontWeight: 700 }}>
+                  {transaction.activity_status || "-"}
+                </Typography>
+              </Stack>
+            </Grid>
+            <Grid item xs={6}>
+              <Stack spacing={0.3}>
+                <Typography variant="caption" color="text.secondary">
+                  Channel Code
+                </Typography>
+                <Typography variant="body2">
+                  {transaction.channel_code || "-"}
+                </Typography>
+              </Stack>
+            </Grid>
+            <Grid item xs={6}>
+              <Stack spacing={0.3}>
+                <Typography variant="caption" color="text.secondary">
+                  Branch Code
+                </Typography>
+                <Typography variant="body2">
+                  {transaction.branch_code || "-"}
+                </Typography>
+              </Stack>
+            </Grid>
 
             <Grid item xs={12}>
               <Stack spacing={0.3} direction="row" alignItems="center">
@@ -164,6 +203,23 @@ export default function UserDetail({ isOpen, onClose, transaction }) {
                   {transaction.device_name || "-"}
                 </Typography>
               </Stack>
+
+              <Stack spacing={0.3} sx={{ paddingTop: 4 }}>
+                <Typography variant="caption" color="text.secondary">
+                  Device ID
+                </Typography>
+                <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                  {transaction.id || "-"}
+                </Typography>
+              </Stack>
+              {/* <Stack spacing={0.3} sx={{ paddingTop: 4 }}>
+                <Typography variant="caption" color="text.secondary">
+                  Device IP
+                </Typography>
+                <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                  {transaction.device_ip || "-"}
+                </Typography>
+              </Stack> */}
             </Grid>
             <Grid item xs={6}>
               <Stack spacing={0.3}>
@@ -172,6 +228,14 @@ export default function UserDetail({ isOpen, onClose, transaction }) {
                 </Typography>
                 <Typography variant="body2" sx={{ fontWeight: 500 }}>
                   {transaction.device_long || "-"}
+                </Typography>
+              </Stack>
+              <Stack spacing={0.3} sx={{ paddingTop: "10px" }}>
+                <Typography variant="caption" color="text.secondary">
+                  Device Imei
+                </Typography>
+                <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                  {transaction.device_imei || "-"}
                 </Typography>
               </Stack>
             </Grid>

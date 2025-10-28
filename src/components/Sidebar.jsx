@@ -98,7 +98,51 @@ export default function Sidebar() {
           }}
         >
           {isOpen && (
-            <Typography variant="h6" sx={{ fontWeight: 700, color: "#1976d2" }}>
+            <Typography
+              variant="h6"
+              sx={{
+                fontWeight: 900,
+                fontFamily: "'Poppins', 'Inter', sans-serif",
+                textTransform: "uppercase",
+                letterSpacing: "2px",
+                background: `
+                  linear-gradient(
+                    90deg,
+                    #0EA5E9 0%,
+                    #2563EB 25%,
+                    #1E40AF 50%,
+                    #3B82F6 75%,
+                    #0EA5E9 100%
+                  )
+                `,
+                backgroundSize: "200% 200%",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                animation: "subtleGradientShift 16s ease-in-out infinite",
+                position: "relative",
+                "&::after": {
+                  content: '""',
+                  position: "absolute",
+                  top: 0,
+                  left: "-75%",
+                  width: "50%",
+                  height: "100%",
+                  background:
+                    "linear-gradient(120deg, transparent, rgba(255,255,255,0.5), transparent)",
+                  animation: "shine 4s ease-in-out infinite",
+                },
+                "@keyframes gradientShift": {
+                  "0%": { backgroundPosition: "0% 50%" },
+                  "50%": { backgroundPosition: "100% 50%" },
+                  "100%": { backgroundPosition: "0% 50%" },
+                },
+                "@keyframes shine": {
+                  "0%": { left: "-75%" },
+                  "50%": { left: "125%" },
+                  "100%": { left: "125%" },
+                },
+              }}
+            >
               CYCLOPS
             </Typography>
           )}
@@ -107,7 +151,7 @@ export default function Sidebar() {
           </IconButton>
         </Box>
 
-        {isOpen && (
+        {/* {isOpen && (
           <Box sx={{ px: 2, pb: 2 }}>
             <Box
               sx={{
@@ -141,7 +185,7 @@ export default function Sidebar() {
               </Typography>
             </Box>
           </Box>
-        )}
+        )} */}
 
         <Box sx={{ px: 2, pb: 1 }}>
           <Typography
