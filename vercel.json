@@ -2,6 +2,7 @@
   "version": 2,
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
+  "framework": "vite",
   "functions": {
     "api/**/*.js": {
       "runtime": "@vercel/node@3.2.7"
@@ -10,6 +11,6 @@
   "routes": [
     { "src": "^/api/(.*)$", "dest": "/api/$1" },
     { "handle": "filesystem" },
-    { "src": "/.*", "dest": "/index.html" }
+    { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
