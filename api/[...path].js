@@ -4,32 +4,34 @@ export default async function handler(req, res) {
     const base = "http://103.139.193.155:8082";
     const fullPath = `${base}/${path.join("/")}`;
 
-    const url =
-      req.url.includes("?") && !req.url.endsWith("?")
-        ? `${fullPath}${req.url.substring(req.url.indexOf("?"))}`
-        : fullPath;
+    // tambahkan query string kalau ada
+    const query = req.url.includes("?")
+      ? req.url.substring(req.url.indexOf("?"))
+      : "";
+    const url = `${fullPath}${query}`;
+
+    console.log("Proxy →", url);
 
     const response = await fetch(url, {
       method: req.method,
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: req.method !== "GET" ? JSON.stringify(req.body) : undefined,
     });
 
-    const text = await response.text();
     const contentType = response.headers.get("content-type");
+    const text = await response.text();
 
-    // Pastikan hanya kirim JSON ke FE, bukan HTML
     if (contentType && contentType.includes("application/json")) {
       res.setHeader("Content-Type", "application/json");
       res.status(response.status).send(text);
     } else {
-      console.error("⚠️ API returned non-JSON:", text.slice(0, 200));
-      res.status(502).json({ error: "Invalid response from backend" });
+      res.status(502).json({
+        error: "Invalid response from backend",
+        detail: text.slice(0, 200),
+      });
     }
   } catch (err) {
     console.error("🔥 Proxy error:", err);
-    res.status(500).json({ error: "Proxy server error" });
+    res.status(500).json({ error: "Proxy server error", detail: err.message });
   }
 }
