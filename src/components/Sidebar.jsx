@@ -24,6 +24,7 @@ import {
   ChevronRight,
   LogOut,
   Search,
+  Workflow,
 } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { toggleSidebar } from "../store/sidebarSlice";
@@ -38,7 +39,7 @@ const routeMap = {
   Rules: "/",
   "Transaction Alert": "/transaction-alert",
   "User Alert": "/user-alert",
-  // Reports: "/reports",
+  "Rule Builder": "/create-rule",
   // Settings: "/settings",
 };
 
@@ -47,7 +48,7 @@ const mainMenuItems = [
   { text: "Rules", icon: <Bell size={20} /> },
   { text: "Transaction Alert", icon: <FileText size={20} /> },
   { text: "User Alert", icon: <Users size={20} /> },
-  // { text: "Reports", icon: <BarChart3 size={20} /> },
+  { text: "Rule Builder", icon: <Workflow size={20} /> },
   // { text: "Settings", icon: <Settings size={20} /> },
 ];
 

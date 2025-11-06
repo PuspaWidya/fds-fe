@@ -17,37 +17,18 @@ import {
   Chip,
 } from "@mui/material";
 import { Edit, Settings } from "@mui/icons-material";
-import { SlidersHorizontal, PenLine } from "lucide-react";
+import {
+  SlidersHorizontal,
+  PenLine,
+  PlayCircle,
+  PauseCircle,
+  RefreshCw,
+} from "lucide-react";
 import { useApi } from "../../api/useApi";
-const initialRules = [
-  {
-    rule_name: "Velocity Rule",
-    window_seconds: 60,
-    max_tx: 3,
-    max_amount_per_tx: null,
-    max_amount: 10000000,
-    distance: null,
-    rule_id: 1,
-  },
-  {
-    rule_name: "Impossible Travel Rule",
-    window_seconds: 60,
-    max_tx: null,
-    max_amount_per_tx: null,
-    max_amount: null,
-    distance: 50,
-    rule_id: 2,
-  },
-  {
-    rule_name: "Geo Limit Rule",
-    window_seconds: 120,
-    max_tx: 5,
-    max_amount_per_tx: 2000000,
-    max_amount: 5000000,
-    distance: 100,
-    rule_id: 3,
-  },
-];
+
+import { Switch, Tooltip, Fade } from "@mui/material";
+
+import dayjs from "dayjs";
 
 export default function RuleDashboard() {
   const { loading, error, get, post, put, del } = useApi();
@@ -57,6 +38,19 @@ export default function RuleDashboard() {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
 
+  const handleToggle = (rule) => {
+    const updated = { ...rule, isActive: !rule.isActive };
+
+    console.log("Toggled:", updated);
+
+    // Update state lokal agar UI langsung berubah
+    setRules((prev) =>
+      prev.map((r) =>
+        r.rule_id === rule.rule_id ? { ...r, isActive: !r.isActive } : r
+      )
+    );
+  };
+
   useEffect(() => {
     const fetchTransaction = async () => {
       try {
@@ -65,7 +59,13 @@ export default function RuleDashboard() {
           limit: limit,
         });
 
-        setRules(data.data);
+        setRules(
+          data.data.map((rule) => ({
+            ...rule,
+            isActive: true, // default semua OFF
+          }))
+        );
+        console.log(rules);
       } catch (err) {
         console.error(err);
       }
@@ -110,8 +110,7 @@ export default function RuleDashboard() {
         variant="h5"
         fontWeight={700}
         sx={{
-          mb: 3,
-          fontWeight: 700,
+          mb: 0.5,
           fontFamily: "'Inter', sans-serif",
           color: "#172554",
           letterSpacing: "0.3px",
@@ -120,7 +119,20 @@ export default function RuleDashboard() {
         FDS Rules
       </Typography>
 
-      <Box
+      <Typography
+        variant="subtitle2"
+        sx={{
+          mb: 3,
+          color: "#64748b", // abu-abu lembut
+          fontFamily: "'Inter', sans-serif",
+          maxWidth: 600,
+          lineHeight: 1.5,
+        }}
+      >
+        View, edit, and manage FDS rules.
+      </Typography>
+
+      {/* <Box
         sx={{
           display: "grid",
           gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
@@ -128,119 +140,353 @@ export default function RuleDashboard() {
           alignItems: "stretch",
         }}
       >
-        {rules?.map((rule) => (
-          <Card
-            onClick={() => handleEdit(rule)}
-            key={rule.rule_id}
-            elevation={0}
-            sx={{
-              borderRadius: 1,
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between",
-              height: "100%",
-              backgroundColor: "#fff",
-              position: "relative",
-              overflow: "hidden",
-              transition: "all 0.25s ease-in-out",
-              boxShadow: "0 2px 6px rgba(0,0,0,0.04)",
-              "&:hover": {
-                transform: "translateY(-4px)",
-                boxShadow: "0 8px 22px rgba(37,99,235,0.12)",
-              },
-
-              // gradient line bawah card
-              "&::after": {
-                content: '""',
-                position: "absolute",
-                bottom: 0,
-                left: 0,
-                width: "100%",
-                height: "4px",
-                background:
-                  "linear-gradient(270deg, #06B6D4, #3B82F6, #2563EB, #06B6D4)",
-                backgroundSize: "400% 400%",
-                animation: "moveGradient 6s ease infinite",
-              },
-              "@keyframes moveGradient": {
-                "0%": { backgroundPosition: "0% 50%" },
-                "50%": { backgroundPosition: "100% 50%" },
-                "100%": { backgroundPosition: "0% 50%" },
-              },
-
-              // efek glow halus biru di bawah card
-              "&::before": {
-                content: '""',
-                position: "absolute",
-                bottom: "-10px",
-                left: "15%",
-                width: "70%",
-                height: "15px",
-                background:
-                  "radial-gradient(circle, rgba(59,130,246,0.25), transparent 70%)",
-                filter: "blur(10px)",
-              },
-            }}
-          >
-            <CardContent
+        {rules?.map((rule) => {
+          const isActive = !!rule.is_active;
+          return (
+            <Card
+              onClick={() => handleEdit(rule)}
+              key={rule.rule_id}
+              elevation={0}
               sx={{
-                flexGrow: 1,
+                borderRadius: 1,
                 display: "flex",
                 flexDirection: "column",
-                p: 2,
+                justifyContent: "space-between",
+                height: "100%",
+                backgroundColor: "#fff",
+                position: "relative",
+                overflow: "hidden",
+                transition: "all 0.25s ease-in-out",
+                boxShadow: "0 2px 6px rgba(0,0,0,0.04)",
+                "&:hover": {
+                  transform: "translateY(-4px)",
+                  boxShadow: "0 8px 22px rgba(37,99,235,0.12)",
+                },
+
+                // gradient line bawah card
+                "&::after": {
+                  content: '""',
+                  position: "absolute",
+                  bottom: 0,
+                  left: 0,
+                  width: "100%",
+                  height: "4px",
+                  background:
+                    "linear-gradient(270deg, #06B6D4, #3B82F6, #2563EB, #06B6D4)",
+                  backgroundSize: "400% 400%",
+                  animation: "moveGradient 6s ease infinite",
+                },
+                "@keyframes moveGradient": {
+                  "0%": { backgroundPosition: "0% 50%" },
+                  "50%": { backgroundPosition: "100% 50%" },
+                  "100%": { backgroundPosition: "0% 50%" },
+                },
+
+                // efek glow halus biru di bawah card
+                "&::before": {
+                  content: '""',
+                  position: "absolute",
+                  bottom: "-10px",
+                  left: "15%",
+                  width: "70%",
+                  height: "15px",
+                  background:
+                    "radial-gradient(circle, rgba(59,130,246,0.25), transparent 70%)",
+                  filter: "blur(10px)",
+                },
               }}
             >
-              <Stack
-                direction="row"
-                alignItems="center"
-                justifyContent="space-between"
-                sx={{ mb: 1 }}
+              <CardContent
+                sx={{
+                  flexGrow: 1,
+                  display: "flex",
+                  flexDirection: "column",
+                  p: 2,
+                }}
               >
-                <Stack direction="row" spacing={1} alignItems="center">
-                  <SlidersHorizontal
-                    size={16}
-                    color="#2563EB"
-                    strokeWidth={2}
-                  />
-                  <Typography
-                    variant="subtitle2"
-                    fontWeight={600}
-                    sx={{ color: "#1E293B" }}
-                  >
-                    {rule.rule_name}
-                  </Typography>
+                <Stack
+                  direction="row"
+                  alignItems="center"
+                  justifyContent="space-between"
+                  sx={{ mb: 1 }}
+                >
+                  <Stack direction="row" spacing={1} alignItems="center">
+                    <SlidersHorizontal
+                      size={16}
+                      color="#2563EB"
+                      strokeWidth={2}
+                    />
+                    <Typography
+                      variant="subtitle2"
+                      fontWeight={600}
+                      sx={{ color: "#1E293B" }}
+                    >
+                      {rule.rule_name}
+                    </Typography>
+                    <Tooltip
+                      title={
+                        isActive
+                          ? "Click to deactivate this rule"
+                          : "Click to activate this rule"
+                      }
+                      arrow
+                      placement="top"
+                    >
+                      <Switch
+                        checked={isActive}
+                        size="small"
+                        onClick={(e) => {
+                          e.stopPropagation(); // biar nggak ikut trigger handleEdit
+                          handleToggle(rule);
+                        }}
+                        sx={{
+                          "& .MuiSwitch-switchBase.Mui-checked": {
+                            color: "#172554",
+                          },
+                          "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track":
+                            {
+                              backgroundColor: "#172554",
+                            },
+                          "& .MuiSwitch-track": {
+                            borderRadius: "999px",
+                            backgroundColor: "#e2e8f0",
+                          },
+                        }}
+                      />
+                    </Tooltip>
+                  </Stack>
                 </Stack>
 
-                {/* <IconButton
-                  onClick={() => handleEdit(rule)}
-                  size="small"
+                <Divider sx={{ mb: 1.2 }} />
+
+                <Stack spacing={0.7} flexGrow={1}>
+                  <InfoItem label="Window" value={rule.window_seconds} />
+                  <InfoItem label="Max Tx" value={rule.max_tx} />
+                  <InfoItem label="Max/Tx" value={rule.max_amount_per_tx} />
+                  <InfoItem label="Max Amount" value={rule.max_amount} />
+                  <InfoItem label="Distance" value={rule.distance} />
+                </Stack>
+              </CardContent>
+            </Card>
+          );
+        })}
+      </Box> */}
+
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+          gap: 2,
+          alignItems: "stretch",
+        }}
+      >
+        {rules?.map((rule) => {
+          return (
+            <Fade in key={rule.rule_id} timeout={500}>
+              <Card
+                onClick={() => handleEdit(rule)}
+                elevation={0}
+                sx={{
+                  borderRadius: 2,
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                  // height: 200, // 🔹 semua card sama tinggi
+                  backgroundColor: "#fff",
+                  position: "relative",
+                  overflow: "hidden",
+                  cursor: "pointer",
+                  transition: "all 0.25s ease-in-out",
+                  boxShadow: "0 2px 6px rgba(0,0,0,0.04)",
+                  "&:hover": {
+                    transform: "translateY(-4px)",
+                    boxShadow: "0 8px 22px rgba(37,99,235,0.12)",
+                  },
+                  "&::after": {
+                    content: '""',
+                    position: "absolute",
+                    bottom: 0,
+                    left: 0,
+                    width: "100%",
+                    height: "4px",
+                    background: rule.isActive
+                      ? "linear-gradient(270deg, #3B82F6, #06B6D4, #2563EB)"
+                      : "linear-gradient(270deg, #9ca3af, #d1d5db)",
+                    backgroundSize: "400% 400%",
+                    animation: rule.isActive
+                      ? "moveGradient 6s ease infinite"
+                      : "none",
+                  },
+                  "@keyframes moveGradient": {
+                    "0%": { backgroundPosition: "0% 50%" },
+                    "50%": { backgroundPosition: "100% 50%" },
+                    "100%": { backgroundPosition: "0% 50%" },
+                  },
+                }}
+              >
+                <CardContent
                   sx={{
-                    p: 0.4,
-                    color: "#3B82F6",
-                    transition: "all 0.2s ease",
-                    "&:hover": {
-                      backgroundColor: "rgba(59,130,246,0.08)",
-                    },
+                    flexGrow: 1,
+                    display: "flex",
+                    flexDirection: "column",
+                    p: 2.2,
+                    overflow: "hidden",
                   }}
                 >
-                  <PenLine size={15} strokeWidth={1.7} />
-                </IconButton> */}
-              </Stack>
+                  {/* ===== HEADER ===== */}
+                  <Stack
+                    direction="row"
+                    alignItems="center"
+                    justifyContent="space-between"
+                    sx={{ mb: 1 }}
+                  >
+                    <Stack
+                      direction="row"
+                      spacing={1}
+                      alignItems="center"
+                      sx={{ minWidth: 0 }}
+                    >
+                      <SlidersHorizontal
+                        size={16}
+                        color={rule.isActive ? "#2563EB" : "#9ca3af"}
+                        strokeWidth={2}
+                      />
+                      <Tooltip title={rule.rule_name} placement="top" arrow>
+                        <Typography
+                          variant="subtitle2"
+                          fontWeight={600}
+                          noWrap
+                          sx={{
+                            maxWidth: 150, // 🔹 batasi lebar agar tooltip muncul
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                            color: rule.isActive ? "#1E293B" : "#9ca3af",
+                            transition: "color 0.2s ease",
+                            cursor: "default",
+                          }}
+                        >
+                          {rule.rule_name}
+                        </Typography>
+                      </Tooltip>
+                    </Stack>
 
-              <Divider sx={{ mb: 1.2 }} />
+                    {/* === ACTIVE SWITCH === */}
+                    <Tooltip
+                      title={
+                        rule.isActive
+                          ? "Click to deactivate this rule"
+                          : "Click to activate this rule"
+                      }
+                      arrow
+                      placement="top"
+                    >
+                      <Switch
+                        checked={rule.isActive}
+                        size="small"
+                        onClick={(e) => {
+                          e.stopPropagation(); // tetap tidak ganggu handleEdit
+                          handleToggle(rule);
+                        }}
+                        sx={{
+                          "& .MuiSwitch-switchBase.Mui-checked": {
+                            color: "#172554",
+                          },
+                          "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track":
+                            {
+                              backgroundColor: "#172554",
+                            },
+                          "& .MuiSwitch-track": {
+                            borderRadius: "999px",
+                            backgroundColor: "#e2e8f0",
+                          },
+                        }}
+                      />
+                    </Tooltip>
+                  </Stack>
 
-              <Stack spacing={0.7} flexGrow={1}>
-                <InfoItem label="Window" value={rule.window_seconds} />
-                <InfoItem label="Max Tx" value={rule.max_tx} />
-                <InfoItem label="Max/Tx" value={rule.max_amount_per_tx} />
-                <InfoItem label="Max Amount" value={rule.max_amount} />
-                <InfoItem label="Distance" value={rule.distance} />
-              </Stack>
-            </CardContent>
-          </Card>
-        ))}
+                  {/* ===== TAGS ===== */}
+                  <Stack direction="row" flexWrap="wrap" gap={0.5} mb={1}>
+                    {rule.tags?.length ? (
+                      rule.tags.map((tag, i) => (
+                        <Chip
+                          key={i}
+                          label={tag}
+                          size="small"
+                          sx={{
+                            fontSize: "0.7rem",
+                            height: 20,
+                            backgroundColor: "#f1f5f9",
+                            color: "#2563EB",
+                            borderRadius: "6px",
+                          }}
+                        />
+                      ))
+                    ) : (
+                      <Chip
+                        label="No Tags"
+                        size="small"
+                        sx={{
+                          fontSize: "0.7rem",
+                          height: 20,
+                          backgroundColor: "#f9fafb",
+                          color: "#9ca3af",
+                          borderRadius: "6px",
+                        }}
+                      />
+                    )}
+                  </Stack>
+                  {/* 
+                  <Divider sx={{ mb: 1.2 }} />
+
+                  <Stack spacing={0.7} flexGrow={1}>
+                    <InfoItem label="Window" value={rule.window_seconds} />
+                    <InfoItem label="Max Tx" value={rule.max_tx} />
+                    <InfoItem label="Max/Tx" value={rule.max_amount_per_tx} />
+                    <InfoItem label="Max Amount" value={rule.max_amount} />
+                    <InfoItem label="Distance" value={rule.distance} />
+                  </Stack> */}
+
+                  {/* <Divider sx={{ my: 1.2 }} /> */}
+
+                  {/* ===== STATUS FOOTER ===== */}
+                  <Stack direction="row" alignItems="center" spacing={0.5}>
+                    {rule.isActive ? (
+                      <RefreshCw size={14} color="#22c55e" />
+                    ) : (
+                      <PauseCircle size={14} color="#9ca3af" />
+                    )}
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        color: rule.isActive ? "#22c55e" : "#9ca3af",
+                        fontWeight: 500,
+                      }}
+                    >
+                      {rule.isActive ? "Running" : "Stopped"}
+                    </Typography>
+                    <Tooltip
+                      title={`Last updated: ${dayjs(Date.now()).format(
+                        "DD MMM YYYY HH:mm:ss"
+                      )}`}
+                      arrow
+                      placement="top"
+                    >
+                      <Typography
+                        variant="caption"
+                        color="#94a3b8"
+                        sx={{ cursor: "default" }} // biar kelihatan bisa di-hover
+                      >
+                        {dayjs(Date.now()).format("DD MMM HH:mm")}
+                      </Typography>
+                    </Tooltip>
+                  </Stack>
+                </CardContent>
+              </Card>
+            </Fade>
+          );
+        })}
       </Box>
-
       {/* Dialog edit */}
       <Dialog
         open={open}

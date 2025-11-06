@@ -1,0 +1,23 @@
+{
+  "name": "Suspicious Login",
+  "description": "Detect login attempts from multiple countries",
+  "category": "Login",
+  "priority": "High",
+  "isActive": true,
+  "action": "Alert",
+  "logicGroups": [
+    {
+      "logic": "AND",
+      "conditions": [
+        { "field": "ip_country", "operator": "!=", "value": "user_country" },
+        { "field": "login_attempts", "operator": ">", "value": "3" }
+      ]
+    },
+    {
+      "logic": "OR",
+      "conditions": [
+        { "field": "device", "operator": "contains", "value": "unknown" }
+      ]
+    }
+  ]
+}
